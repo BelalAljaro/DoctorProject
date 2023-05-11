@@ -34,19 +34,19 @@ public class ShowAppointmentController implements Initializable {
     @FXML
     private Button logoutBTN;
     @FXML
-    private TableView<?> tableView;
+    private TableView<Appointment> tableView;
     @FXML
-    private TableColumn<?, ?> idCol;
+    private TableColumn<Appointment, Integer> idCol;
     @FXML
     private Button updateInfo;
     @FXML
-    private TableColumn<?, ?> appointment_date;
+    private TableColumn<Appointment, Date> appointment_date;
     @FXML
-    private TableColumn<?, ?> appointment_day;
+    private TableColumn<Appointment,Date> appointment_day;
     @FXML
-    private TableColumn<?, ?> appointment_time;
+    private TableColumn<Appointment, Date> appointment_time;
     @FXML
-    private TableColumn<?, ?> status;
+    private TableColumn<Appointment, String> status;
     @FXML
     private Button createA;
     @FXML
@@ -57,7 +57,23 @@ public class ShowAppointmentController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+            try {
+            // TODO
+            Class.forName("com.mysql.cj.jdbc.Driver");
+                        String url1 = "jdbc:mysql://127.0.0.1:3306/clinic_appointment?serverTimezone=UTC";
+            String usernameD = "root";
+            String passwordD = "";
+            Connection connection = DriverManager.getConnection(url1, usernameD, passwordD);
+            Statement stat = connection.createStatement();
+        } catch (ClassNotFoundException | SQLException ex) {
+            Logger.getLogger(DashBoardController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        idCol.setCellValueFactory(new PropertyValueFactory("id"));
+        appointment_date.setCellValueFactory(new PropertyValueFactory(" appointment_date"));
+        appointment_day.setCellValueFactory(new PropertyValueFactory("appointment_day"));
+       appointment_time.setCellValueFactory(new PropertyValueFactory("appointment_time"));
+      status.setCellValueFactory(new PropertyValueFactory("status"));
+       
     }    
 
     @FXML
@@ -67,7 +83,21 @@ public class ShowAppointmentController implements Initializable {
 
     @FXML
     private void ShowAppointment(ActionEvent event) {
-                //it here already
+                    try {
+            String Sql="SELECT * FROM  appointment ";
+            ResultSet rs=stat.executeQuery(Sql);
+            while(rs.next()){
+               Appointment appointment=new  Appointment();
+               appointment.setId(rs.getInt("id"));
+               appointment.setAppointment_date(rs.getDate("appointment_date"));
+               appointment.setAppointment_day(rs.getDate("appointment_day"));
+               appointment.setAppointment_time(rs.getDate("appointment_time"));
+               appointment.setStatus(rs.getString("status"));              
+                this.tableView.getItems().add(appointment);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ShowPatientController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @FXML
